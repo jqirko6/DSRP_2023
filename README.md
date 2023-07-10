@@ -1,7 +1,9 @@
 # data-science
-for class
+## Project for DSRP_2023
+### About the Repository
+The poject is using the dataset of the top 1000 rated movies on the website IMDB. This repository includes all my labs to do with this dataset.
 
-Project for DSRP_2023
-My project is on the top 1000 rated movies on IMDB.
-The data used for this was found on Kaggle.
-Here is the link to the dataset: https://www.kaggle.com/datasets/arthurchongg/imdb-top-1000-movies
+### More Info
+The dataset for this was taken from Kaggle. The link to dataset can be found here:
+> https://www.kaggle.com/datasets/arthurchongg/imdb-top-1000-movies 
+
