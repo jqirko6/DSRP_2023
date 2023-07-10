@@ -2,9 +2,9 @@
 library(ggplot2)
 str(imdb_clean)
 
-#plot 1
-#plot 2 boxplot
-#plot 3 scatterplot
+##plot 1
+##plot 2 boxplot
+##plot 3 scatterplot
 
 
 #### Plot 1 (distribution of one variable) ####

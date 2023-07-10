@@ -1,5 +1,5 @@
 #### Imports ####
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 
 data <- read.csv("data/imdb_clean.csv")
