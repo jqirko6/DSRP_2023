@@ -1,0 +1,60 @@
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+## Dataset
+
+```{r}
+imdb_clean
+head(imdb_clean)
+```
+
+### Filter()
+
+```{r}
+#filter the observations of your dataset based on one or more variablw using filter()
+filter(imdb_clean, between(rating, 8.5, 9.5))
+```
+
+### Select()
+
+```{r}
+#create a smaller dataset with a subset pf variables using select()
+select(imdb_clean, title, genre, rating)
+```
+
+### Mutate()
+
+```{r}
+mutate(imdb_clean,
+       average_rating = mean(rating, na.rm = T),
+       sum = sum(average_rating))
+```
+
+### Summarize()
+
+```{r}
+# create a data table of group summaries on at least one numeric variable by at least one categorical variable using summarize()
+summarize(imdb_clean, 
+          mean_rating = mean(rating),
+          .by = genre)
+```
+
+### Arrange()
+
+```{r}
+# reorder a data table of your choice by one or more variables using arrange()
+average_rating <- summarize(imdb_clean, 
+                            mean_rating = mean(rating),
+                            .by = genre)
+
+arrange(average_rating, desc(mean_rating))
+```
+
+### Create at least one new visualization using some form of an updated dataset
+
+```{r}
+ggplot(data = average_rating, aes(x=mean_rating, y=genre)) +
+  geom_point()
+```
