@@ -7,4 +7,4 @@ usethis::use_git_config(user.name = "jqirko6",
 
 usethis::create_github_token()
 
-credentials::set_github_pat("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")
+credentials::set_github_pat("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")
