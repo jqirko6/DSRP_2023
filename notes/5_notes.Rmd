@@ -21,8 +21,8 @@ library(ggplot2)
 | `summarize():` collapse many values down to a single summary
 | 
 | Each of these functions work similarly:
-| -    The first argument is a data frame
-| -    The following arguments describe what to do with the data frame, using the variable (column) names
+| - The first argument is a data frame
+| - The following arguments describe what to do with the data frame, using the variable (column) names
 
 ## Work for Today
 
@@ -55,7 +55,7 @@ filter(starwars, species == "Human", sex == "male")
 We can use different comparison operators to filter:
 
 | `!` is "not"
-| `==`  is "equal
+| `==` is "equal
 | `!=` is "not equal"
 | `&` is "and" (can use a comma instead)
 | `|` is "or"
@@ -153,7 +153,7 @@ arrange(starwars, species, desc(birth_year))
 
 | Arrange the starwars dataset from tallest to shortest characters
 | Arrange the starwars dataset from shortest to tallest by species
-| Alphabetize the Star Wars characters by their hair color then eye color 
+| Alphabetize the Star Wars characters by their hair color then eye color
 
 ```{r}
 #1
@@ -230,7 +230,7 @@ select(starwars, hair_color, skin_color, eye_color, birth_year)
 select(starwars, -c(name:mass, sex:starships))
 ```
 
-### 4 Add New Variables with `mutate()` 
+### 4 Add New Variables with `mutate()`
 
 ```{r}
 starwars_small <- select(starwars, height, mass, species)
@@ -288,7 +288,7 @@ mutate(starwars_small,
        mass_lbs = mass*2.2)
 ```
 
-### 5 Summarize data with `summarize()` 
+### 5 Summarize data with `summarize()`
 
 ```{r}
 summarize(starwars,
@@ -315,4 +315,14 @@ summarize(starwars,
           mean_mass = mean(mass, na.rm = T),
           count = n(),
           .by = c(species,sex))
+```
+
+### 6 Rename Data
+
+rename(data, new_name = old_name)
+
+```{r}
+starwars
+rename(starwars,
+       birthYear = birth_year)
 ```
