@@ -26,25 +26,31 @@ ggplot(pca_vals, aes(PC1, PC2, color = genre)) +
 
 #### Unsupervised Learning ####
 
-# 1. Collect Data # 
+# 1. Collect Data ####
 head(imdb_clean)
 
-# 2. Clean and Process Data # 
+# 2. Clean and Process Data ####
 data <- na.omit(imdb_clean)
 data <- select(data, -title)
-imdbFactor <- mutate(data,
-                     genre = as.factor(genre))
 
-imdbAllNumeric <- mutate(data, 
-               genre = as.integer(as.factor(genre)),
-               release_year = as.integer(as.factor(release_year)),
-               runtime = as.integer(as.factor(runtime)),
-               rating = as.integer(as.factor(rating)),
-               `gross(M)` = as.integer(as.factor(`gross(M)`)))
 
-imdb   
+imdbAllNumeric <- mutate(data,
+              genre = as.integer(as.factor(genre)),
+              release_year = as.integer(as.factor(release_year)),
+              runtime = as.integer(as.factor(runtime)),
+              rating = as.integer(as.factor(rating)),
+              `gross(M)` = as.integer(as.factor(`gross(M)`))
+              )
 
-# 3. Visualize Correlation #
+imdbFactor <- select(mutate(data,
+                     genre = as.factor(genre),
+                     release_year = as.factor(release_year)),
+                     genre, release_year
+                     )
+                     
+
+
+# 3. Visualize Correlation ####
 library(reshape2)
 library(ggplot2)
 
@@ -63,12 +69,13 @@ ggplot(imdbCor, aes(x = Var1, y = Var2, fill = value)) +
 
 
       
-# 4. Perform Feature Selection
+# 4. Perform Feature Selection ####
 
-# Classify genre, Predict gross(M)
+# Classify genre, Predict gross(M) ####
 
-# 5. Separate data into test and training data 
+# 5. Separate data into test and training data  ####
 library(rsample)
+library(MLmetrics)
 
 set.seed(3251)
 
@@ -82,16 +89,69 @@ data_class_split <- initial_split(imdbFactor, prop = 0.75)
 train_class_data <- training(data_class_split)
 test_class_data <- testing(data_class_split)
 
-# 6. Choose  Model
+# 6. Choose  Model 7. Train Model ####
 
-# Classification
+## Regression 
 
-binary_train_data <- filter(train_class_data, genre %in% c("Drama", "Comedy"))
-binary_test_data <- filter(test_class_data, genre %in% c("Drama", "Comedy"))
+# Linear Regression
+linreg_fit <- linear_reg() |>
+  set_engine("lm") |>
+  set_mode("regression") |>
+  fit(`gross(M)`~., data = train_reg_data)
 
-logreg_fit <- logistic_reg() |>
-  set_engine("glm") |>
+summary(linreg_fit$fit)
+
+
+imdbPred <- test_reg_data
+imdbPred$linReg <- predict(linreg_fit, test_reg_data)$.pred
+
+yardstick::mae(imdbPred, truth = `gross(M)`, estimate = linReg)
+yardstick::rmse(imdbPred, truth = `gross(M)`, estimate = linReg)
+
+# Boosted Decision Tree
+
+boost_tree_fit <- boost_tree() |>
+  set_engine("xgboost") |>
+  set_mode("regression") |>
+  fit(`gross(M)` ~ ., data = train_reg_data)
+
+boost_reg_fit$fit
+
+imdbPred2 <- test_reg_data
+imdbPred2$logReg <- predict(boost_tree_fit, test_reg_data)$.pred
+
+yardstick::mae(imdbPred2, truth = `gross(M)`, estimate = logReg)
+yardstick::rmse(imdbPred2, truth = `gross(M)`, estimate = logReg)
+
+
+
+
+## Classification 
+
+# boost tree
+
+boost_tree_fit2 <- boost_tree() |>
+  set_engine("xgboost") |>
   set_mode("classification") |>
-  fit(genre ~ ., data = binary_train_data)
+  fit(genre ~ ., data = train_class_data)
 
-  
+boost_tree_fit2$fit
+
+imdbPredC <- test_class_data
+imdbPredC$logReg <- predict(boost_tree_fit2, test_class_data)$.pred_class
+
+F1_Score(imdbPredC$logReg, imdbPredC$genre)
+
+# random forest
+
+rand_forest_fit <- rand_forest() |>
+  set_engine("ranger") |>
+  set_mode("classification") |>
+  fit(genre ~ ., data = train_class_data)
+
+rand_forest_fit$fit
+
+imdbPredD <- test_class_data
+imdbPredD$logReg <- predict(rand_forest_fit, test_class_data)$.pred_class
+
+F1_Score(imdbPredD$logReg, imdbPredD$genre)
